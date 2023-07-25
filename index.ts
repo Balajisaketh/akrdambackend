@@ -12,11 +12,51 @@ app.post('/api/insertpatientsdata',(req:any, res:any) => {
     const gender=req.body.gender
     const treattype=req.body.treattype
     const treatdate=req.body.treatdate
-    const bookid=randomUUID()
-    console.log(bookid,"i m bookingid: ")
+    
+    
     const qrydata={
-      text:'INSERT INTO patients (fullname,age,gender,treatmenttype,treatmentdate,bookingid) values ($1,$2,$3,$4,$5,$6)  RETURNING *',
-      values:[fullname,age,gender,treattype,treatdate,bookid]
+      text:'INSERT INTO patients (fullname,age,gender,treatmenttype,treatmentdate) values ($1,$2,$3,$4,$5)  RETURNING *',
+      values:[fullname,age,gender,treattype,treatdate]
+    }
+    client.query(qrydata).then((response:any)=>
+            {
+              console.log(response.rows,"i m responds");
+              res.send({success:true,message:"insert successfully"})
+              
+            }).catch((err:any)=>
+            {
+              console.log(err.message,"i m error data")
+              res.send({success:false,message:err.message})
+            }); 
+  
+  })
+  app.get("/api/getpatients", (req:any, res:any)=>{
+     const textqry={
+      text:'SELECT  p.fullname,p.bookingid, p.age, p.treatmenttype,p.treatmentdate,p.paymentstatus,p.gender,a.street_address,a.city,a.state,a.postal_code,a.country,m.ownmedicaldecision,m.pah,m.myastheniagravis,m.heartfailure,m.hemophilia,m.fluidonbodyparts FROM patients p JOIN address a ON p.bookingid = a.address_id LEFT JOIN medicalcondition m ON p.bookingid = m.medicalid;'
+        
+        //  text:'SELECT patients.fullname,age,patients.gender,patients.treatmenttype,patients.treatmentdate,medicalcondition.ownmedicaldecision,medicalcondition.pah,medicalcondition.heartfailure,medicalcondition.fluidonbodyparts,medicalcondition.hemophilia,address.street_address,address.city,address.state,address.country,address.postal_code FROM patients FULL JOIN medicalcondition ON patients.bookingid = medicalcondition.medicalid FULL JOIN address ON patients.bookingid = address.address_id;'     
+        }
+  
+     client.query(textqry).then((response:any)=>
+     {
+      console.log(response.rows.city,response.rows.state,response.rows.postal_code,"address")
+           console.log("i m res", response)
+        
+           res.send(response.rows)
+     }).catch((err:any)=>{
+        console.log("i m err", err)
+        res.send({status:false,message:err});
+     })
+  })
+  app.post('/api/insertaddress',(req:any, res:any)=>{
+const city=req.body.city
+const  country=req.body.country
+const street_address=req.body.street_address
+const postal_code=req.body.postal_code
+const state=req.body.state
+    const qrydata={
+      text:'INSERT INTO address (city,street_address,state,postal_code,country) values ($1,$2,$3,$4,$5)  RETURNING *',
+      values:[city,state,street_address,postal_code,country]
     }
     client.query(qrydata).then((response:any)=>
             {
@@ -28,21 +68,31 @@ app.post('/api/insertpatientsdata',(req:any, res:any) => {
               console.log(err.message,"i m error data")
               res.send({success:false,message:err.message})
             });
-  
   })
-  app.get("/api/getpatients", (req:any, res:any)=>{
-     const textqry={
-         text:'SELECT * from patients'
-     }
-     client.query(textqry).then((response:any)=>
-     {
-           console.log("i m res", response)
-           res.send(response.rows)
-     }).catch((err:any)=>{
-        console.log("i m err", err)
-        res.send({status:false,message:err});
-     })
-  })
+  app.post('/api/medicalstatus',(req:any, res:any)=>{
+    console.log(req.body,"i m in");
+    const hemophilia = req.body.hemophilia;
+    const pah=req.body.pah
+    const fluidonbody=req.body.fluidonbodyparts
+    const heartfailure=req.body.heartfailure
+    const gravis=req.body.gravis
+    const medicalknowldge=req.body.knowledge
+            const qrydata={
+          text:'INSERT INTO medicalcondition (ownmedicaldecision,pah,heartfailure,hemophilia,fluidonbodyparts,myastheniagravis) values ($1,$2,$3,$4,$5,$6)  RETURNING *',
+          values:[heartfailure,hemophilia,fluidonbody,gravis,medicalknowldge,pah]
+        }
+        client.query(qrydata).then((response:any)=>
+                {
+                  console.log(response.rows,"i m responds");
+                  res.send({success:true,message:"insert successfully"})
+                  
+                }).catch((err:any)=>
+                {
+                  console.log(err.message,"i m error data")
+                  res.send({success:false,message:err.message})
+                });
+      })
+
 app.post('/api/insertpays', (req:any, res:any)=>{
 const price=req.body.price;
 const dop=new Date();

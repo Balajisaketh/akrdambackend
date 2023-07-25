@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const pgdbconnect_1 = require("./dbconnect/pgdbconnect");
 const cors_1 = __importDefault(require("cors"));
-const crypto_1 = require("crypto");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
@@ -17,11 +16,9 @@ app.post('/api/insertpatientsdata', (req, res) => {
     const gender = req.body.gender;
     const treattype = req.body.treattype;
     const treatdate = req.body.treatdate;
-    const bookid = (0, crypto_1.randomUUID)();
-    console.log(bookid, "i m bookingid: ");
     const qrydata = {
-        text: 'INSERT INTO patients (fullname,age,gender,treatmenttype,treatmentdate,bookingid) values ($1,$2,$3,$4,$5,$6)  RETURNING *',
-        values: [fullname, age, gender, treattype, treatdate, bookid]
+        text: 'INSERT INTO patients (fullname,age,gender,treatmenttype,treatmentdate) values ($1,$2,$3,$4,$5)  RETURNING *',
+        values: [fullname, age, gender, treattype, treatdate]
     };
     pgdbconnect_1.client.query(qrydata).then((response) => {
         console.log(response.rows, "i m responds");
@@ -33,14 +30,54 @@ app.post('/api/insertpatientsdata', (req, res) => {
 });
 app.get("/api/getpatients", (req, res) => {
     const textqry = {
-        text: 'SELECT * from patients'
+        text: 'SELECT  p.fullname,p.bookingid, p.age, p.treatmenttype,p.treatmentdate,p.paymentstatus,p.gender,a.street_address,a.city,a.state,a.postal_code,a.country,m.ownmedicaldecision,m.pah,m.myastheniagravis,m.heartfailure,m.hemophilia,m.fluidonbodyparts FROM patients p JOIN address a ON p.bookingid = a.address_id LEFT JOIN medicalcondition m ON p.bookingid = m.medicalid;'
+        //  text:'SELECT patients.fullname,age,patients.gender,patients.treatmenttype,patients.treatmentdate,medicalcondition.ownmedicaldecision,medicalcondition.pah,medicalcondition.heartfailure,medicalcondition.fluidonbodyparts,medicalcondition.hemophilia,address.street_address,address.city,address.state,address.country,address.postal_code FROM patients FULL JOIN medicalcondition ON patients.bookingid = medicalcondition.medicalid FULL JOIN address ON patients.bookingid = address.address_id;'     
     };
     pgdbconnect_1.client.query(textqry).then((response) => {
+        console.log(response.rows.city, response.rows.state, response.rows.postal_code, "address");
         console.log("i m res", response);
         res.send(response.rows);
     }).catch((err) => {
         console.log("i m err", err);
         res.send({ status: false, message: err });
+    });
+});
+app.post('/api/insertaddress', (req, res) => {
+    const city = req.body.city;
+    const country = req.body.country;
+    const street_address = req.body.street_address;
+    const postal_code = req.body.postal_code;
+    const state = req.body.state;
+    const qrydata = {
+        text: 'INSERT INTO address (city,street_address,state,postal_code,country) values ($1,$2,$3,$4,$5)  RETURNING *',
+        values: [city, state, street_address, postal_code, country]
+    };
+    pgdbconnect_1.client.query(qrydata).then((response) => {
+        console.log(response.rows, "i m responds");
+        res.send({ success: true, message: "insert successfully" });
+    }).catch((err) => {
+        console.log(err.message, "i m error data");
+        res.send({ success: false, message: err.message });
+    });
+});
+app.post('/api/medicalstatus', (req, res) => {
+    console.log(req.body, "i m in");
+    const hemophilia = req.body.hemophilia;
+    const pah = req.body.pah;
+    const fluidonbody = req.body.fluidonbodyparts;
+    const heartfailure = req.body.heartfailure;
+    const gravis = req.body.gravis;
+    const medicalknowldge = req.body.knowledge;
+    const qrydata = {
+        text: 'INSERT INTO medicalcondition (ownmedicaldecision,pah,heartfailure,hemophilia,fluidonbodyparts,myastheniagravis) values ($1,$2,$3,$4,$5,$6)  RETURNING *',
+        values: [heartfailure, hemophilia, fluidonbody, gravis, medicalknowldge, pah]
+    };
+    pgdbconnect_1.client.query(qrydata).then((response) => {
+        console.log(response.rows, "i m responds");
+        res.send({ success: true, message: "insert successfully" });
+    }).catch((err) => {
+        console.log(err.message, "i m error data");
+        res.send({ success: false, message: err.message });
     });
 });
 app.post('/api/insertpays', (req, res) => {
