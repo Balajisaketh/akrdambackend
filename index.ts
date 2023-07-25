@@ -84,7 +84,7 @@ app.post('/api/insert/contact',(req:any, res:any) => {
 
 
 
-/*---------------insert contact details-------------------------------------------------------------*/
+/*---------------insert newsletter details-------------------------------------------------------------*/
 
 
 app.post('/api/insert/newsletter',(req:any, res:any) => {

@@ -61,7 +61,7 @@ app.post('/api/insert/contact', (req, res) => {
         res.send({ success: false, message: err.message });
     });
 });
-/*---------------insert contact details-------------------------------------------------------------*/
+/*---------------insert newsletter details-------------------------------------------------------------*/
 app.post('/api/insert/newsletter', (req, res) => {
     const data = req.body;
     const newsletteruid = (0, crypto_1.randomUUID)();
