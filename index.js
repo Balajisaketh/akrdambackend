@@ -11,6 +11,77 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 const PORT = process.env.PORT || 5876;
+/*----------------insert booking-----------------------------------------*/
+app.post('/api/insert/booking', (req, res) => {
+    const data = req.body;
+    console.log(data);
+    const bookinguid = (0, crypto_1.randomUUID)();
+    const fullname = data.fullname;
+    const dateofbirth = data.dateofbirth;
+    const mobilenumber = data.mobilenumber;
+    const email = data.email;
+    const wtrvtreatment = data.wtrvtreatment;
+    const wchtreatment = data.wchtreatment;
+    const dynamicdata = data.dynamicdata;
+    const dateoftreatment = data.dateoftreatment;
+    const time = data.time;
+    const addressfrtmt = data.addressfrtmt;
+    const street = data.street;
+    const state = data.state;
+    const zipcode = data.zipcode;
+    const qrydata = {
+        text: 'INSERT INTO bookings (bookinguid,fullname,dateofbirth,mobilenumber,email,wtrvtreatment,wchtreatment,dynamicdata,dateoftreatment,time,addressfrtmt,street,state,zipcode) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)  RETURNING *',
+        values: [bookinguid, fullname, dateofbirth, mobilenumber, email, wtrvtreatment, wchtreatment, dynamicdata, dateoftreatment, time, addressfrtmt, street, state, zipcode]
+    };
+    pgdbconnect_1.client.query(qrydata).then((response) => {
+        console.log({ success: true, message: "booking inserted successfully" });
+        res.send({ success: true, message: "booking inserted successfully" });
+    }).catch((err) => {
+        console.log({ success: false, message: err.message });
+        res.send({ success: false, message: err.message });
+    });
+});
+/*---------------insert contact details-------------------------------------------------------------*/
+app.post('/api/insert/contact', (req, res) => {
+    const data = req.body;
+    const contactuid = (0, crypto_1.randomUUID)();
+    const fullname = data.fullname;
+    const email = data.email;
+    const phonenumber = data.phonenumber;
+    const message = data.message;
+    const qrydata = {
+        text: 'INSERT INTO contacts (contactuid,fullname,email,phonenumber,message) values ($1,$2,$3,$4,$5)  RETURNING *',
+        values: [contactuid, fullname, email, phonenumber, message]
+    };
+    pgdbconnect_1.client.query(qrydata).then((response) => {
+        console.log({ success: true, message: "contact inserted successfully" });
+        res.send({ success: true, message: "contact inserted successfully" });
+    }).catch((err) => {
+        console.log({ success: false, message: err.message });
+        res.send({ success: false, message: err.message });
+    });
+});
+/*---------------insert contact details-------------------------------------------------------------*/
+app.post('/api/insert/newsletter', (req, res) => {
+    const data = req.body;
+    const newsletteruid = (0, crypto_1.randomUUID)();
+    const fullname = data.fullname;
+    const email = data.email;
+    const phonenumber = data.phonenumber;
+    const state = data.message;
+    const qrydata = {
+        text: 'INSERT INTO newsletters (newsletteruid,fullname,email,phonenumber,state) values ($1,$2,$3,$4,$5)  RETURNING *',
+        values: [newsletteruid, fullname, email, phonenumber, state]
+    };
+    pgdbconnect_1.client.query(qrydata).then((response) => {
+        console.log({ success: true, message: "contact inserted successfully" });
+        res.send({ success: true, message: "contact inserted successfully" });
+    }).catch((err) => {
+        console.log({ success: false, message: err.message });
+        res.send({ success: false, message: err.message });
+    });
+});
+/*----------------------------------------------------------------------------*/
 app.post('/api/insertpatientsdata', (req, res) => {
     const fullname = req.body.fullname;
     const age = req.body.age;

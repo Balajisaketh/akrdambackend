@@ -6,6 +6,120 @@ const app:any = express();
 app.use(express.json());
 app.use(cors())
 const PORT:any =process.env.PORT || 5876;
+
+
+/*----------------insert booking-----------------------------------------*/ 
+
+
+
+app.post('/api/insert/booking',(req:any, res:any) => {
+  const data:any= req.body;
+   
+  console.log(data);
+  const bookinguid:String=randomUUID()
+  const  fullname:String =data.fullname;
+  const dateofbirth:String = data.dateofbirth;
+  const  mobilenumber:String= data.mobilenumber;
+  const email:String = data.email;
+  const wtrvtreatment:String = data.wtrvtreatment;
+  const wchtreatment:String = data.wchtreatment;
+  const dynamicdata:object = data.dynamicdata;
+  const dateoftreatment:String = data.dateoftreatment;
+  const time:String = data.time;
+  const addressfrtmt:String = data.addressfrtmt;
+  const street:String = data.street;
+  const state:String = data.state;
+  const zipcode:Number = data.zipcode;
+
+  
+  const qrydata={
+    text:'INSERT INTO bookings (bookinguid,fullname,dateofbirth,mobilenumber,email,wtrvtreatment,wchtreatment,dynamicdata,dateoftreatment,time,addressfrtmt,street,state,zipcode) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)  RETURNING *',
+    values:[bookinguid,fullname,dateofbirth,mobilenumber,email,wtrvtreatment,wchtreatment,dynamicdata,dateoftreatment,time,addressfrtmt,street,state,zipcode]
+  }
+  client.query(qrydata).then((response:any)=>
+          {
+            console.log({success:true,message:"booking inserted successfully"});
+            res.send({success:true,message:"booking inserted successfully"})
+            
+          }).catch((err:any)=>
+          {
+            console.log({success:false,message:err.message})
+            res.send({success:false,message:err.message})
+          });
+
+})
+
+
+/*---------------insert contact details-------------------------------------------------------------*/
+
+
+app.post('/api/insert/contact',(req:any, res:any) => {
+  const data:any= req.body;
+   
+   
+  const contactuid:String=randomUUID();
+  const fullname:String = data.fullname;
+  const email:String = data.email;
+  const phonenumber:String = data.phonenumber;
+  const message:String = data.message;
+  
+  const qrydata={
+    text:'INSERT INTO contacts (contactuid,fullname,email,phonenumber,message) values ($1,$2,$3,$4,$5)  RETURNING *',
+    values:[contactuid,fullname,email,phonenumber,message]
+  }
+  client.query(qrydata).then((response:any)=>
+          {
+            console.log({success:true,message:"contact inserted successfully"});
+            res.send({success:true,message:"contact inserted successfully"})
+            
+          }).catch((err:any)=>
+          {
+            console.log({success:false,message:err.message})
+            res.send({success:false,message:err.message})
+          });
+
+})
+
+
+
+
+
+/*---------------insert contact details-------------------------------------------------------------*/
+
+
+app.post('/api/insert/newsletter',(req:any, res:any) => {
+  const data:any= req.body;
+   
+   
+  const newsletteruid:String=randomUUID();
+  const fullname:String = data.fullname;
+  const email:String = data.email;
+  const phonenumber:String = data.phonenumber;
+  const state:String = data.message;
+  
+  const qrydata={
+    text:'INSERT INTO newsletters (newsletteruid,fullname,email,phonenumber,state) values ($1,$2,$3,$4,$5)  RETURNING *',
+    values:[newsletteruid,fullname,email,phonenumber,state]
+  }
+  client.query(qrydata).then((response:any)=>
+          {
+            console.log({success:true,message:"contact inserted successfully"});
+            res.send({success:true,message:"contact inserted successfully"})
+            
+          }).catch((err:any)=>
+          {
+            console.log({success:false,message:err.message})
+            res.send({success:false,message:err.message})
+          });
+
+})
+
+
+
+
+
+/*----------------------------------------------------------------------------*/ 
+
 app.post('/api/insertpatientsdata',(req:any, res:any) => {
     const fullname=req.body.fullname
     const age=req.body.age;

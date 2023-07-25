@@ -14,8 +14,8 @@ const pg_1 = require("pg");
 const client = new pg_1.Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'akramdb',
-    password: '1234',
+    database: 'medics',
+    password: '1999',
     port: 5432,
 });
 exports.client = client;
